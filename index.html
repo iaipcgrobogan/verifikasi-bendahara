@@ -65,8 +65,37 @@
       gap: 16px;
     }
 
-    .brand { font-size: 20px; font-weight: 800; }
-    .subtitle { margin-top: 6px; opacity: .9; font-size: 13px; }
+    
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  background: white;
+  border-radius: 10px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.brand { font-size: 20px; font-weight: 800; }
+.subtitle { margin-top: 6px; opacity: .9; font-size: 13px; }
+
+@media (max-width: 760px) {
+  .brand-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  .brand {
+    font-size: 17px;
+  }
+}
+
 
     main {
       max-width: 1200px;
@@ -202,16 +231,45 @@
       .filters { grid-template-columns: 1fr; }
       .stat-number { font-size: 23px; }
     }
+
+    
+.password-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-weight: 400;
+  cursor: pointer;
+  color: #43594a;
+}
+
+.password-toggle input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #087443;
+  cursor: pointer;
+}
+
   </style>
 </head>
 
 <body>
   <header class="header">
     <div class="header-inner">
-      <div>
-        <div class="brand">PC IAI GROBOGAN</div>
-        <div class="subtitle">Sistem Verifikasi Pembayaran Peserta</div>
-      </div>
+      
+<div class="brand-row">
+  <img
+    class="brand-logo"
+    src="https://i.ibb.co.com/gFRb6frq/Logo-IAI-Grobogan-b.png"
+    alt="Logo PC IAI Grobogan"
+  >
+  <div>
+    <div class="brand">PC IAI GROBOGAN</div>
+    <div class="subtitle">Sistem Verifikasi Pembayaran Peserta</div>
+  </div>
+</div>
+
       <button id="logoutBtn" class="secondary hidden">Keluar</button>
     </div>
   </header>
@@ -227,9 +285,16 @@
         <form id="loginForm">
           <div class="field">
             <label for="password">Password Bendahara</label>
-            <input id="password" type="password"
-              autocomplete="current-password" required
-              minlength="1" placeholder="Masukkan password">
+            
+<input id="password" type="password"
+  autocomplete="current-password" required
+  minlength="1" placeholder="Masukkan password">
+
+<label class="password-toggle">
+  <input id="showPassword" type="checkbox">
+  <span>Tampilkan password</span>
+</label>
+
           </div>
           <button id="loginBtn" class="primary full" type="submit">
             Masuk
@@ -338,6 +403,14 @@ let allParticipants = [];
 let isLoading = false;
 
 const $ = (id) => document.getElementById(id);
+
+  
+$("showPassword").addEventListener("change", () => {
+  $("password").type = $("showPassword").checked
+    ? "text"
+    : "password";
+});
+
 
 function showMessage(target, message, type = "info") {
   target.replaceChildren();
@@ -685,6 +758,8 @@ function logout(callBackend = true) {
   $("loginSection").classList.remove("hidden");
   $("logoutBtn").classList.add("hidden");
   $("password").value = "";
+  $("showPassword").checked = false;
+  $("password").type = "password";
   $("participantBody").replaceChildren();
 
   if (callBackend && oldToken) {
