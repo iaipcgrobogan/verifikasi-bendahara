@@ -1,0 +1,704 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verifikasi Bendahara | PC IAI Grobogan</title>
+  <meta name="theme-color" content="#087443">
+  <style>
+    :root {
+      --green: #087443;
+      --green-dark: #075b36;
+      --green-light: #e9f7ef;
+      --bg: #f4f7f5;
+      --text: #24332b;
+      --muted: #6b7a70;
+      --border: #dce6df;
+      --red: #b42318;
+      --orange: #9a6700;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 15px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .primary { background: var(--green); color: white; }
+    .primary:hover { background: var(--green-dark); }
+    .secondary { background: #e8eee9; color: var(--text); }
+    .danger { background: #fde9e7; color: var(--red); }
+    .small { padding: 8px 10px; font-size: 12px; }
+
+    .header {
+      background: var(--green);
+      color: white;
+      padding: 22px 18px;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand { font-size: 20px; font-weight: 800; }
+    .subtitle { margin-top: 6px; opacity: .9; font-size: 13px; }
+
+    main {
+      max-width: 1200px;
+      margin: 25px auto;
+      padding: 0 16px 40px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px #193b2510;
+    }
+
+    h2 { font-size: 18px; margin: 0 0 8px; }
+    .muted { color: var(--muted); line-height: 1.6; }
+    .hidden { display: none !important; }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #ccd9cf;
+      border-radius: 9px;
+      padding: 11px 12px;
+      background: white;
+      color: var(--text);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #a9dfbf;
+      border-color: var(--green);
+    }
+
+    .login-wrap { max-width: 430px; margin: 40px auto; }
+    .field { margin: 17px 0; }
+    .full { width: 100%; }
+
+    .message {
+      padding: 12px 14px;
+      border-radius: 9px;
+      margin: 14px 0;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .message.error { background: #fde9e7; color: var(--red); }
+    .message.success { background: var(--green-light); color: var(--green-dark); }
+    .message.info { background: #fff5d9; color: #795600; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      padding: 17px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .stat-label { color: var(--muted); font-size: 12px; }
+    .stat-number { font-size: 27px; font-weight: 800; margin-top: 8px; }
+
+    .filters {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 2fr);
+      gap: 13px;
+      align-items: end;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 17px;
+    }
+
+    table { width: 100%; border-collapse: collapse; min-width: 950px; }
+    th, td {
+      text-align: left;
+      padding: 13px 11px;
+      border-bottom: 1px solid #e6ede8;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f8f4;
+      font-size: 12px;
+      color: #43594a;
+      white-space: nowrap;
+    }
+
+    td { line-height: 1.55; }
+    .person { font-weight: 700; }
+    .sub { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+    .status {
+      display: inline-block;
+      border-radius: 20px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pending { background: #fff3cd; color: var(--orange); }
+    .verified { background: #d9f5e4; color: #17643a; }
+    .rejected { background: #fde2e0; color: #a21d17; }
+    .link { color: #086bca; text-decoration: none; font-weight: 700; }
+    .link:hover { text-decoration: underline; }
+    .empty { text-align: center; padding: 35px 10px; color: var(--muted); }
+    .footer { text-align: center; color: var(--muted); font-size: 12px; padding: 18px; }
+
+    @media (max-width: 760px) {
+      .header-inner { align-items: flex-start; }
+      .brand { font-size: 17px; }
+      .card { padding: 16px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filters { grid-template-columns: 1fr; }
+      .stat-number { font-size: 23px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div>
+        <div class="brand">PC IAI GROBOGAN</div>
+        <div class="subtitle">Sistem Verifikasi Pembayaran Peserta</div>
+      </div>
+      <button id="logoutBtn" class="secondary hidden">Keluar</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="loginSection" class="login-wrap">
+      <div class="card">
+        <h2>Login Bendahara</h2>
+        <p class="muted">
+          Masuk untuk memeriksa pendaftaran dan bukti pembayaran peserta kegiatan.
+        </p>
+
+        <form id="loginForm">
+          <div class="field">
+            <label for="password">Password Bendahara</label>
+            <input id="password" type="password"
+              autocomplete="current-password" required
+              minlength="1" placeholder="Masukkan password">
+          </div>
+          <button id="loginBtn" class="primary full" type="submit">
+            Masuk
+          </button>
+        </form>
+
+        <div id="loginMessage" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="dashboardSection" class="hidden">
+      <div id="globalMessage" aria-live="polite"></div>
+
+      <div class="card">
+        <h2>Daftar Verifikasi</h2>
+        <p class="muted">
+          Pilih kegiatan untuk melihat peserta. Periksa bukti pembayaran
+          sebelum mengubah status. Perubahan status akan dicatat pada sistem.
+        </p>
+
+        <div class="filters">
+          <div>
+            <label for="eventSelect">Kegiatan</label>
+            <select id="eventSelect">
+              <option value="">Memuat kegiatan...</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="statusSelect">Status</label>
+            <select id="statusSelect">
+              <option value="SEMUA">Semua status</option>
+              <option value="MENUNGGU">Menunggu</option>
+              <option value="TERVERIFIKASI">Terverifikasi</option>
+              <option value="DITOLAK">Ditolak</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="searchInput">Cari peserta</label>
+            <input id="searchInput" type="search"
+              placeholder="Nama, email, ID pendaftaran...">
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:16px">
+          <button id="refreshBtn" class="primary">Muat ulang data</button>
+          <span id="resultInfo" class="muted"></span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Total ditampilkan</div>
+          <div id="countAll" class="stat-number">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Menunggu</div>
+          <div id="countPending" class="stat-number">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Terverifikasi</div>
+          <div id="countVerified" class="stat-number">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Ditolak</div>
+          <div id="countRejected" class="stat-number">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Peserta</th>
+                <th>Asal / Instansi</th>
+                <th>Kontak</th>
+                <th>Bukti pembayaran</th>
+                <th>Status</th>
+                <th>Keterangan</th>
+                <th>Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="participantBody">
+              <tr><td colspan="8" class="empty">Pilih kegiatan untuk memuat peserta.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      PC IAI Kabupaten Grobogan · Sistem Verifikasi Bendahara
+    </div>
+  </main>
+
+<script>
+"use strict";
+
+const API_URL = "https://verifikasi-bendahara-iai.iaipcgrobogan.workers.dev";
+
+let sessionToken = null;
+let allParticipants = [];
+let isLoading = false;
+
+const $ = (id) => document.getElementById(id);
+
+function showMessage(target, message, type = "info") {
+  target.replaceChildren();
+
+  if (!message) return;
+
+  const box = document.createElement("div");
+  box.className = "message " + type;
+  box.textContent = message;
+  target.appendChild(box);
+}
+
+async function apiRequest(payload) {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("Koneksi backend gagal (HTTP " + response.status + ").");
+  }
+
+  const result = await response.json();
+
+  if (!result.success) {
+    if (/sesi tidak valid|sudah berakhir/i.test(result.message || "")) {
+      logout(false);
+    }
+    throw new Error(result.message || "Permintaan tidak berhasil.");
+  }
+
+  return result;
+}
+
+$("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const password = $("password").value;
+  if (!password) return;
+
+  $("loginBtn").disabled = true;
+  $("loginBtn").textContent = "Memeriksa...";
+  showMessage($("loginMessage"), "");
+
+  try {
+    const result = await apiRequest({
+      action: "login",
+      password
+    });
+
+    sessionToken = result.token;
+    $("password").value = "";
+    $("loginSection").classList.add("hidden");
+    $("dashboardSection").classList.remove("hidden");
+    $("logoutBtn").classList.remove("hidden");
+
+    showMessage($("globalMessage"), "Login berhasil.", "success");
+    await loadEvents();
+
+  } catch (error) {
+    showMessage($("loginMessage"), error.message, "error");
+  } finally {
+    $("loginBtn").disabled = false;
+    $("loginBtn").textContent = "Masuk";
+  }
+});
+
+async function loadEvents() {
+  try {
+    const result = await apiRequest({
+      action: "list_events",
+      token: sessionToken
+    });
+
+    const select = $("eventSelect");
+    select.replaceChildren();
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Pilih kegiatan...";
+    select.appendChild(placeholder);
+
+    (result.data || []).forEach((event) => {
+      const option = document.createElement("option");
+      option.value = event.idEvent;
+      option.textContent = event.namaEvent + " (" + event.idEvent + ")";
+      select.appendChild(option);
+    });
+
+    if (!result.data || result.data.length === 0) {
+      showMessage($("globalMessage"),
+        "Belum ada kegiatan pada sheet EVENT.", "info");
+    }
+  } catch (error) {
+    showMessage($("globalMessage"), error.message, "error");
+  }
+}
+
+async function loadParticipants() {
+  const idEvent = $("eventSelect").value;
+
+  if (!idEvent) {
+    allParticipants = [];
+    renderParticipants();
+    $("resultInfo").textContent = "Pilih kegiatan terlebih dahulu.";
+    return;
+  }
+
+  if (isLoading) return;
+
+  isLoading = true;
+  $("refreshBtn").disabled = true;
+  $("refreshBtn").textContent = "Memuat...";
+
+  try {
+    const result = await apiRequest({
+      action: "list_verifikasi",
+      token: sessionToken,
+      idEvent,
+      status: "SEMUA"
+    });
+
+    allParticipants = result.data || [];
+    renderParticipants();
+    showMessage($("globalMessage"), "Data berhasil dimuat.", "success");
+
+  } catch (error) {
+    showMessage($("globalMessage"), error.message, "error");
+  } finally {
+    isLoading = false;
+    $("refreshBtn").disabled = false;
+    $("refreshBtn").textContent = "Muat ulang data";
+  }
+}
+
+function makeCell(text, className) {
+  const td = document.createElement("td");
+  const span = document.createElement("span");
+  span.textContent = text || "-";
+  if (className) span.className = className;
+  td.appendChild(span);
+  return td;
+}
+
+function addLine(container, text, className) {
+  const div = document.createElement("div");
+  div.textContent = text || "-";
+  if (className) div.className = className;
+  container.appendChild(div);
+}
+
+function renderParticipants() {
+  const body = $("participantBody");
+  body.replaceChildren();
+
+  const statusFilter = $("statusSelect").value;
+  const keyword = $("searchInput").value.trim().toLowerCase();
+
+  const filtered = allParticipants.filter((p) => {
+    const status = String(p.statusVerifikasi || "").toUpperCase();
+    const statusMatch = statusFilter === "SEMUA" || status === statusFilter;
+
+    const text = [
+      p.nama, p.email, p.nik, p.idPendaftaran, p.asalPC, p.instansi
+    ].join(" ").toLowerCase();
+
+    return statusMatch && text.includes(keyword);
+  });
+
+  $("countAll").textContent = allParticipants.length;
+  $("countPending").textContent = allParticipants.filter(
+    p => String(p.statusVerifikasi).toUpperCase() === "MENUNGGU"
+  ).length;
+  $("countVerified").textContent = allParticipants.filter(
+    p => String(p.statusVerifikasi).toUpperCase() === "TERVERIFIKASI"
+  ).length;
+  $("countRejected").textContent = allParticipants.filter(
+    p => String(p.statusVerifikasi).toUpperCase() === "DITOLAK"
+  ).length;
+
+  $("resultInfo").textContent =
+    filtered.length + " peserta ditampilkan dari " +
+    allParticipants.length + " data.";
+
+  if (filtered.length === 0) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 8;
+    td.className = "empty";
+    td.textContent = "Tidak ada data peserta yang sesuai.";
+    tr.appendChild(td);
+    body.appendChild(tr);
+    return;
+  }
+
+  filtered.forEach((p, index) => {
+    const tr = document.createElement("tr");
+
+    tr.appendChild(makeCell(String(index + 1)));
+
+    const person = document.createElement("td");
+    addLine(person, p.nama, "person");
+    addLine(person, "ID: " + (p.idPendaftaran || "-"), "sub");
+    addLine(person, "NIK: " + (p.nik || "-"), "sub");
+    addLine(person, p.timestampPendaftaran || "", "sub");
+    tr.appendChild(person);
+
+    const asal = document.createElement("td");
+    addLine(asal, p.asalPC);
+    addLine(asal, p.instansi, "sub");
+    tr.appendChild(asal);
+
+    const contact = document.createElement("td");
+    addLine(contact, p.email);
+    addLine(contact, p.noTelp, "sub");
+    tr.appendChild(contact);
+
+    const evidence = document.createElement("td");
+    const rawLink = String(p.buktiPembayaran || "").trim();
+
+    if (/^https:\/\/\S+$/i.test(rawLink)) {
+      try {
+        const parsed = new URL(rawLink);
+        if (parsed.protocol === "https:") {
+          const a = document.createElement("a");
+          a.href = parsed.href;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.className = "link";
+          a.textContent = "Lihat bukti ↗";
+          evidence.appendChild(a);
+        } else {
+          evidence.textContent = "Tautan tidak valid";
+        }
+      } catch (_) {
+        evidence.textContent = "Tautan tidak valid";
+      }
+    } else {
+      evidence.textContent = rawLink ? "Format tautan tidak didukung" : "Belum ada bukti";
+    }
+
+    tr.appendChild(evidence);
+
+    const statusCell = document.createElement("td");
+    const badge = document.createElement("span");
+    const status = String(p.statusVerifikasi || "MENUNGGU").toUpperCase();
+
+    badge.className = "status " +
+      (status === "TERVERIFIKASI" ? "verified" :
+       status === "DITOLAK" ? "rejected" : "pending");
+    badge.textContent = status;
+    statusCell.appendChild(badge);
+    tr.appendChild(statusCell);
+
+    tr.appendChild(makeCell(p.keteranganVerifikasi || "-"));
+
+    const actionCell = document.createElement("td");
+    const actionWrap = document.createElement("div");
+    actionWrap.className = "actions";
+
+    const note = document.createElement("textarea");
+    note.rows = 2;
+    note.placeholder = "Keterangan (opsional)";
+    note.value = p.keteranganVerifikasi || "";
+    note.setAttribute("aria-label", "Keterangan untuk " + (p.nama || "peserta"));
+    note.style.minWidth = "160px";
+    actionWrap.appendChild(note);
+
+    if (status === "MENUNGGU") {
+      const approve = document.createElement("button");
+      approve.className = "primary small";
+      approve.textContent = "Terverifikasi";
+      approve.addEventListener("click", () => {
+        updateStatus(p, "TERVERIFIKASI", note.value, approve, reject);
+      });
+
+      const reject = document.createElement("button");
+      reject.className = "danger small";
+      reject.textContent = "Tolak";
+      reject.addEventListener("click", () => {
+        updateStatus(p, "DITOLAK", note.value, approve, reject);
+      });
+
+      actionWrap.append(approve, reject);
+      var rejectButton = reject;
+    } else {
+      const change = document.createElement("button");
+      change.className = "secondary small";
+      change.textContent = "Ubah status";
+      change.addEventListener("click", () => {
+        showMessage(
+          $("globalMessage"),
+          "Status yang sudah diproses tidak dapat diubah dari tombol ini. Hubungi administrator jika perlu koreksi.",
+          "info"
+        );
+      });
+      actionWrap.appendChild(change);
+    }
+
+    actionCell.appendChild(actionWrap);
+    tr.appendChild(actionCell);
+    body.appendChild(tr);
+  });
+}
+
+async function updateStatus(p, status, keterangan, approve, reject) {
+  const label = status === "TERVERIFIKASI" ? "menyetujui" : "menolak";
+  const yakin = confirm(
+    "Anda akan " + label + " pendaftaran " + (p.nama || "") +
+    " dengan status " + status + ".\n\nPastikan bukti pembayaran sudah diperiksa."
+  );
+
+  if (!yakin) return;
+
+  if (approve) approve.disabled = true;
+  if (reject) reject.disabled = true;
+
+  try {
+    const result = await apiRequest({
+      action: "update_verifikasi",
+      token: sessionToken,
+      idPendaftaran: p.idPendaftaran,
+      status,
+      keterangan
+    });
+
+    showMessage($("globalMessage"), result.message, "success");
+    await loadParticipants();
+
+  } catch (error) {
+    showMessage($("globalMessage"), error.message, "error");
+    if (approve) approve.disabled = false;
+    if (reject) reject.disabled = false;
+  }
+}
+
+function logout(callBackend = true) {
+  const oldToken = sessionToken;
+  sessionToken = null;
+  allParticipants = [];
+
+  $("dashboardSection").classList.add("hidden");
+  $("loginSection").classList.remove("hidden");
+  $("logoutBtn").classList.add("hidden");
+  $("password").value = "";
+  $("participantBody").replaceChildren();
+
+  if (callBackend && oldToken) {
+    apiRequest({ action: "logout", token: oldToken }).catch(() => {});
+  }
+
+  showMessage($("loginMessage"), "Anda telah keluar dari sesi.", "info");
+}
+
+$("eventSelect").addEventListener("change", loadParticipants);
+$("statusSelect").addEventListener("change", renderParticipants);
+$("searchInput").addEventListener("input", renderParticipants);
+$("refreshBtn").addEventListener("click", loadParticipants);
+$("logoutBtn").addEventListener("click", () => logout(true));
+</script>
+</body>
+</html>
