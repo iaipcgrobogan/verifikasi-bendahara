@@ -251,6 +251,42 @@
   cursor: pointer;
 }
 
+    
+/* Pagination tabel peserta */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.pagination button {
+  min-width: 38px;
+  padding: 9px 12px;
+  background: #e8eee9;
+  color: #24332b;
+  border-radius: 8px;
+}
+
+.pagination button.active {
+  background: #087443;
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  text-align: center;
+  color: #6b7a70;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
   </style>
 </head>
 
@@ -384,6 +420,8 @@
               <tr><td colspan="8" class="empty">Pilih kegiatan untuk memuat peserta.</td></tr>
             </tbody>
           </table>
+          <div id="pagination" class="pagination"></div>
+          <div id="paginationInfo" class="pagination-info"></div>
         </div>
       </div>
     </section>
@@ -401,6 +439,8 @@ const API_URL = "https://verifikasi-bendahara-iai.iaipcgrobogan.workers.dev";
 let sessionToken = null;
 let allParticipants = [];
 let isLoading = false;
+let currentPage = 1;
+const pageSize = 10;
 
 const $ = (id) => document.getElementById(id);
 
@@ -605,13 +645,20 @@ function renderParticipants() {
     td.textContent = "Tidak ada data peserta yang sesuai.";
     tr.appendChild(td);
     body.appendChild(tr);
+    $("pagination").replaceChildren();
+    $("paginationInfo").textContent = "";
     return;
   }
 
-  filtered.forEach((p, index) => {
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const pageData = filtered.slice(startIndex, startIndex + pageSize);
+  pageData.forEach((p, index) => {
     const tr = document.createElement("tr");
 
-    tr.appendChild(makeCell(String(index + 1)));
+    tr.appendChild(makeCell(String(startIndex + index + 1)));
 
     const person = document.createElement("td");
     addLine(person, p.nama, "person");
@@ -716,6 +763,78 @@ function renderParticipants() {
     tr.appendChild(actionCell);
     body.appendChild(tr);
   });
+  renderPagination(filtered.length);
+}
+
+
+function renderPagination(totalItems) {
+  const container = $("pagination");
+  const info = $("paginationInfo");
+
+  container.replaceChildren();
+
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  if (totalPages <= 1) {
+    info.textContent = totalItems
+      ? "Menampilkan " + totalItems + " peserta."
+      : "";
+    return;
+  }
+
+  const start = (currentPage - 1) * pageSize + 1;
+  const end = Math.min(currentPage * pageSize, totalItems);
+
+  info.textContent =
+    "Menampilkan " + start + "–" + end +
+    " dari " + totalItems + " peserta.";
+
+  function addButton(label, page, disabled, active) {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.disabled = disabled;
+
+    if (active) button.classList.add("active");
+
+    button.addEventListener("click", () => {
+      currentPage = page;
+      renderParticipants();
+    });
+
+    container.appendChild(button);
+  }
+
+  addButton("‹", currentPage - 1, currentPage === 1, false);
+
+  for (let page = 1; page <= totalPages; page++) {
+    if (
+      totalPages <= 7 ||
+      page === 1 ||
+      page === totalPages ||
+      Math.abs(page - currentPage) <= 1
+    ) {
+      addButton(
+        String(page),
+        page,
+        false,
+        page === currentPage
+      );
+    } else if (
+      page === currentPage - 2 ||
+      page === currentPage + 2
+    ) {
+      const dots = document.createElement("span");
+      dots.textContent = "…";
+      container.appendChild(dots);
+    }
+  }
+
+  addButton(
+    "›",
+    currentPage + 1,
+    currentPage === totalPages,
+    false
+  );
 }
 
 async function updateStatus(p, status, keterangan, approve, reject) {
@@ -770,8 +889,15 @@ function logout(callBackend = true) {
 }
 
 $("eventSelect").addEventListener("change", loadParticipants);
-$("statusSelect").addEventListener("change", renderParticipants);
-$("searchInput").addEventListener("input", renderParticipants);
+$("statusSelect").addEventListener("change", () => {
+  currentPage = 1;
+  renderParticipants();
+});
+
+$("searchInput").addEventListener("input", () => {
+  currentPage = 1;
+  renderParticipants();
+});
 $("refreshBtn").addEventListener("click", loadParticipants);
 $("logoutBtn").addEventListener("click", () => logout(true));
 </script>
