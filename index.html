@@ -745,19 +745,27 @@ function renderParticipants() {
 
       actionWrap.append(approve, reject);
       var rejectButton = reject;
-    } else {
-      const change = document.createElement("button");
-      change.className = "secondary small";
-      change.textContent = "Ubah status";
-      change.addEventListener("click", () => {
-        showMessage(
-          $("globalMessage"),
-          "Status yang sudah diproses tidak dapat diubah dari tombol ini. Hubungi administrator jika perlu koreksi.",
-          "info"
-        );
-      });
-      actionWrap.appendChild(change);
-    }
+    
+} else {
+  const change = document.createElement("button");
+  change.className = "secondary small";
+
+  // Status yang dituju adalah kebalikan dari status sekarang.
+  const targetStatus =
+    status === "TERVERIFIKASI" ? "DITOLAK" : "TERVERIFIKASI";
+
+  change.textContent =
+    targetStatus === "TERVERIFIKASI"
+      ? "Ubah menjadi Terverifikasi"
+      : "Ubah menjadi Ditolak";
+
+  change.addEventListener("click", () => {
+    updateStatus(p, targetStatus, note.value, change, null);
+  });
+
+  actionWrap.appendChild(change);
+}
+
 
     actionCell.appendChild(actionWrap);
     tr.appendChild(actionCell);
